@@ -1,101 +1,71 @@
 # POLICY ITERATION ALGORITHM
 
 ## AIM
-To develop a Python program to find the optimal policy for the given MDP using the policy iteration algorithm.
+The goal of the notebook is to implement and evaluate a policy iteration algorithm within a custom environment (gym-walk) to find the optimal policy that maximizes the agent's performance in terms of reaching a goal state with the highest probability and reward.
 
 ## PROBLEM STATEMENT
-The bandit slippery walk problem is a reinforcement learning problem in which an agent must learn to navigate a 7-state environment in order to reach a goal state. The environment is slippery, so the agent has a chance of moving in the opposite direction of the action it takes.
-
-### States
-
-The environment has 7 states:
-* Two Terminal States: **G**: The goal state & **H**: A hole state.
-* Five Transition states / Non-terminal States including  **S**: The starting state.
-
-### Actions
-
-The agent can take two actions:
-
-* R: Move right.
-* L: Move left.
-
-### Transition Probabilities
-
-The transition probabilities for each action are as follows:
-
-* **50%** chance that the agent moves in the intended direction.
-* **33.33%** chance that the agent stays in its current state.
-* **16.66%** chance that the agent moves in the opposite direction.
-
-For example, if the agent is in state S and takes the "R" action, then there is a 50% chance that it will move to state 4, a 33.33% chance that it will stay in state S, and a 16.66% chance that it will move to state 2.
-
-### Rewards
-
-The agent receives a reward of +1 for reaching the goal state (G). The agent receives a reward of 0 for all other states.
-
-
+The task is to develop and apply a policy iteration algorithm to solve a grid-based environment (gym-walk). The environment consists of states the agent must navigate through to reach a goal. The agent has to learn the best sequence of actions (policy) that maximizes its chances of reaching the goal state while obtaining the highest cumulative reward.
 
 ## POLICY ITERATION ALGORITHM
-The algorithm implemented in the policy_iteration is a method used to find the optimal policy in a Markov decision process (MDP).
 
-Here's a step-by-step explanation of the algorithm:
+Initialize: Start with a random policy for each state and initialize the value function arbitrarily.
 
-Step 1 : Initialize the policy pi. In this implementation, a random action is chosen for each state s in the MDP P. The initial policy is represented by the lambda function pi=lambda s:{s:a for s,a in enumerate(random_actions)}[s], where random_actions is a list of randomly chosen actions for each state.
+Policy Evaluation: For each state, evaluate the current policy by computing the expected value function under the current policy.
 
-Step 2 : Enter a loop that continues until the policy pi is no longer changing. This is determined by comparing the previous policy (old_pi) with the current policy computed in the loop.
+Policy Improvement: Improve the policy by making it greedy with respect to the current value function (i.e., choose the action that maximizes the value function for each state).
 
-Step 3 : Store the previous policy as old_pi for comparison later.
+Check Convergence: Repeat the evaluation and improvement steps until the policy stabilizes (i.e., when no further changes to the policy occur).
 
-Step 4 : Perform policy evaluation using the function policy_evaluation. This step calculates the state-values (V) for each state s given the current policy pi. The state-values represent the expected cumulative rewards starting from state s following policy pi and discounting future rewards by a factor of gamma. The function policy_evaluation is called with the arguments pi, P, gamma, and theta.
-
-Step 5 : Perform policy improvement using the function policy_improvement. This step updates the policy pi based on the current state-values V. The function policy_improvement is called with the arguments V, P, and gamma.
-
-Step 6 : Check if the policy has converged by comparing the previous policy old_pi with the current policy {s:pi(s) for s in range(len(P))}. If they are the same for all states s, the loop is exited.
-
-Step 7 : Return the final state-values V and the optimal policy pi.
-
-To summarize, policy iteration iteratively improves the policy by alternating between policy evaluation and policy improvement steps until convergence is reached. The algorithm guarantees to find the optimal policy for the given MDP P with a discount factor gamma.
+Optimal Policy: Once convergence is achieved, the policy is considered optimal, providing the best actions for the agent in each state.
 
 ## POLICY IMPROVEMENT FUNCTION
 ### Name: R.THIVAKAR
 ### Register Number: 212222240109
-```
+```python
 def policy_improvement(V, P, gamma=1.0):
     Q = np.zeros((len(P), len(P[0])), dtype=np.float64)
-    # Write your code here to implement policy improvement algorithm
     for s in range(len(P)):
-      for a in range(len(P[s])):
-        for prob, next_state,reward, done in P[s][a]:
-          Q[s][a]+= prob*(reward+gamma*V[next_state]*(not done))
+        for a in range(len(P[s])):
+          for prob, next_state, reward, done in P[s][a]:
+            Q[s][a] += prob * (reward + gamma * V[next_state] * (not done))
+    # New policy: select the action with the highest Q-value for each state
     new_pi = lambda s: {s:a for s, a in enumerate(np.argmax(Q, axis=1))}[s]
+
+
     return new_pi
-
 ```
+
 ## POLICY ITERATION FUNCTION
-### Name: Ashwin Kumar S
-### Register Number: 212222240013
-```
-def policy_iteration(P, gamma=1.0,theta=1e-10):
-  random_actions=np.random.choice(tuple(P[0].keys()),len(P))
-  pi = lambda s: {s:a for s, a in enumerate(random_actions)}[s]
-  while True:
-    old_pi = {s:pi(s) for s in range(len(P))}
-    V = policy_evaluation(pi, P,gamma,theta)
-    pi = policy_improvement(V,P,gamma)
-    if old_pi == {s:pi(s) for s in range(len(P))}:
-      break
-  return V,pi
-```
+### Name: R.THIVAKAR
+### Register Number: 212222240109
+```python
+def policy_iteration(P, gamma=1.0, theta=1e-10):
+    random_actions = np.random.choice(tuple(P[0].keys()), len(P))
+    # Write your code here to implement the policy iteration algorithm
+    pi=lambda s: {s:a for s, a in enumerate(random_actions)}[s]
+    while True:
+      old_pi={s:pi(s) for s in range(len(P))}
+      V=policy_evaluation(pi,P,gamma,theta)
+      pi=policy_improvement(V,P,gamma)
+      if old_pi=={s:pi(s) for s in range(len(P))}:
+        break
 
+
+    return V, pi
+```
 ## OUTPUT:
-## optimal policy 
-![image](https://github.com/user-attachments/assets/3e2aef5f-72c9-4a14-9471-f70c308e4f8e)
+### Optimal policy
 
-## optimal value function 
-![image](https://github.com/user-attachments/assets/387c5ac0-d768-40f7-b96f-e8b632bc8f3f)
+![RL_3 1](https://github.com/user-attachments/assets/01a04a65-0c7b-4f85-b44f-12085ebd243b)
 
-## success rate for the optimal policy
-![image](https://github.com/user-attachments/assets/877c02af-8d23-46c5-b609-df38cdfa1176)
+
+### Optimal value function
+![RL_3 2](https://github.com/user-attachments/assets/6a5f77a1-4d01-4f00-a79c-ebf1759ea723)
+
+
+### Success rate for the Optimal policy
+![RL_3 3](https://github.com/user-attachments/assets/8ee7f7b9-4e6f-4282-af85-f3c80f429050)
+
 
 ## RESULT:
-Thus, a Python program is developed to find the optimal policy for the given MDP using the policy iteration algorithm.
+Thus the program to iterate the policy evaluation and policy improvement is executed successfully.
