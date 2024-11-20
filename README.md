@@ -56,7 +56,8 @@ def policy_iteration(P, gamma=1.0, theta=1e-10):
 ## OUTPUT:
 ### Optimal policy
 
-![RL_3 1](https://github.com/user-attachments/assets/01a04a65-0c7b-4f85-b44f-12085ebd243b)
+
+![RL 3 1](https://github.com/user-attachments/assets/be711f63-3602-41df-87db-f091e22e4b5c)
 
 
 ### Optimal value function
